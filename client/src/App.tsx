@@ -6,6 +6,7 @@ import MainLayout from "./components/layout/MainLayout";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
 import { useAuthContext } from "./context/AuthContext";
 import DashboardPage from "./pages/auth/dashboard/DashboardPage";
+import POSPage from "./pages/POSPage";
 
 function AppRoutes() {
   const { isAuthenticated } = useAuthContext();
@@ -25,6 +26,7 @@ function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route element={<MainLayout />}>
           <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
+          <Route path={ROUTES.POS} element={<POSPage />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to={ROUTES.LOGIN} replace />} />
