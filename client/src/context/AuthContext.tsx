@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useCallback } from "react";
 import type { ReactNode } from "react";
 import type { User, AuthState } from "../types/auth.types";
-import { authService } from "../services/auth.service";
 
 interface AuthContextType extends AuthState {
   login: (password: string) => Promise<void>;
@@ -9,6 +8,11 @@ interface AuthContextType extends AuthState {
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
+
+const FAKE_USERS: Record<string, User> = {
+  admin123: { id: 1, name: "Admin", role: "admin" },
+  cashier123: { id: 2, name: "Cashier", role: "cashier" },
+};
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>({
@@ -20,25 +24,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (password: string) => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
-    try {
-      const user: User = await authService.login({ password });
+
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
+    const user = FAKE_USERS[password];
+
+    if (user) {
       setState({
         user,
         isAuthenticated: true,
         isLoading: false,
         error: null,
       });
-    } catch (err) {
+    } else {
       setState((prev) => ({
         ...prev,
         isLoading: false,
-        error: err instanceof Error ? err.message : "Login failed",
+        error: "Invalid password. Try admin123 or cashier123",
       }));
     }
   }, []);
 
   const logout = useCallback(() => {
-    authService.logout();
     setState({
       user: null,
       isAuthenticated: false,

@@ -10,7 +10,9 @@ export const ROUTES = {
   DASHBOARD: "/dashboard",
   POS: "/pos",
   PRODUCTS: "/products",
+  CATEGORIES: "/categories",
   INVENTORY: "/inventory",
-  REPORTS: "/reports",
+  ANALYTICS: "/analytics",
+  SALES_HISTORY: "/sales-history",
   USERS: "/users",
 } as const;
