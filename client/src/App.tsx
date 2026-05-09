@@ -4,8 +4,8 @@ import { ROUTES } from "./constants";
 import LoginPage from "./pages/auth/LoginPage";
 import MainLayout from "./components/layout/MainLayout";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
-import DashboardPage from "./pages/auth/dashboard/Dashboard";
 import { useAuthContext } from "./context/AuthContext";
+import DashboardPage from "./pages/auth/dashboard/DashboardPage";
 
 function AppRoutes() {
   const { isAuthenticated } = useAuthContext();
