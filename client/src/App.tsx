@@ -8,6 +8,7 @@ import { useAuthContext } from "./context/AuthContext";
 import DashboardPage from "./pages/auth/dashboard/DashboardPage";
 import POSPage from "./pages/POSPage";
 import ProductsPage from "./pages/products/ProductsPage";
+import CategoriesPage from "./pages/categories/CategoriesPage";
 
 function AppRoutes() {
   const { isAuthenticated } = useAuthContext();
@@ -29,6 +30,7 @@ function AppRoutes() {
           <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
           <Route path={ROUTES.POS} element={<POSPage />} />
           <Route path={ROUTES.PRODUCTS} element={<ProductsPage />} />
+          <Route path={ROUTES.CATEGORIES} element={<CategoriesPage />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to={ROUTES.LOGIN} replace />} />
