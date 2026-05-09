@@ -1,11 +1,10 @@
-function App() {
+import { AuthProvider } from "./context/AuthContext";
+import LoginPage from "./pages/auth/LoginPage";
+
+export default function App() {
   return (
-    <div className="App">
-      <h1 className="text-3xl font-bold underline text-amber-600">
-        Hello world!
-      </h1>
-    </div>
+    <AuthProvider>
+      <LoginPage />
+    </AuthProvider>
   );
 }
-
-export default App;
