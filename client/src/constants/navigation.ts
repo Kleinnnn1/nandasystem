@@ -28,13 +28,6 @@ export const NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
-    section: "Reports",
-    items: [
-      { label: "Analytics", path: ROUTES.ANALYTICS, icon: TrendingUp },
-      { label: "Sales History", path: ROUTES.SALES_HISTORY, icon: Receipt },
-    ],
-  },
-  {
     section: "Admin",
     items: [
       { label: "Users", path: ROUTES.USERS, icon: Users, adminOnly: true },

@@ -5,10 +5,13 @@ import LoginPage from "./pages/auth/LoginPage";
 import MainLayout from "./components/layout/MainLayout";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
 import { useAuthContext } from "./context/AuthContext";
-import DashboardPage from "./pages/auth/dashboard/DashboardPage";
-import POSPage from "./pages/POSPage";
 import ProductsPage from "./pages/products/ProductsPage";
 import CategoriesPage from "./pages/categories/CategoriesPage";
+import InventoryPage from "./pages/inventory/InventoryPage";
+import DashboardPage from "./pages/auth/dashboard/DashboardPage";
+import POSPage from "./pages/POSPage";
+import UsersPage from "./pages/users/UserPage";
+
 
 function AppRoutes() {
   const { isAuthenticated } = useAuthContext();
@@ -31,6 +34,12 @@ function AppRoutes() {
           <Route path={ROUTES.POS} element={<POSPage />} />
           <Route path={ROUTES.PRODUCTS} element={<ProductsPage />} />
           <Route path={ROUTES.CATEGORIES} element={<CategoriesPage />} />
+          <Route path={ROUTES.INVENTORY} element={<InventoryPage />} />
+
+          {/* Admin only */}
+          <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+            <Route path={ROUTES.USERS} element={<UsersPage />} />
+          </Route>
         </Route>
       </Route>
       <Route path="*" element={<Navigate to={ROUTES.LOGIN} replace />} />

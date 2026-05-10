@@ -12,7 +12,5 @@ export const ROUTES = {
   PRODUCTS: "/products",
   CATEGORIES: "/categories",
   INVENTORY: "/inventory",
-  ANALYTICS: "/analytics",
-  SALES_HISTORY: "/sales-history",
   USERS: "/users",
 } as const;
