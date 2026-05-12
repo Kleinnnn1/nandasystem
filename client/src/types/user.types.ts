@@ -6,13 +6,14 @@ export interface User {
   username: string;
   role: UserRole;
   isActive: boolean;
-  lastLogin: string;
+  lastLogin: string | null;
 }
 
 export interface UserFormData {
   name: string;
   username: string;
   role: UserRole;
+  password?: string;
 }
 
 export interface PasswordFormData {

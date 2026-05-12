@@ -6,7 +6,7 @@ import type { User, PasswordFormData } from "../../types/user.types";
 
 interface Props {
   user: User;
-  onSave: (data: PasswordFormData) => boolean;
+  onSave: (data: PasswordFormData) => Promise<boolean>;
   onClose: () => void;
 }
 
@@ -20,14 +20,14 @@ export default function PasswordModal({ user, onSave, onClose }: Props) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!form.newPassword) return setError("Password is required");
     if (form.newPassword.length < 6)
       return setError("Password must be at least 6 characters");
     if (form.newPassword !== form.confirmPassword)
       return setError("Passwords do not match");
 
-    const result = onSave(form);
+    const result = await onSave(form);
     if (result) setSuccess(true);
   };
 

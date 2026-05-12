@@ -1,14 +1,31 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import type { User, UserFormData, PasswordFormData } from "../types/user.types";
-import { FAKE_USERS } from "../constants/user.fake";
+import { userService } from "../services/user.service";
 
 export function useUsers() {
-  const [users, setUsers] = useState<User[]>(FAKE_USERS);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [search, setSearch] = useState("");
   const [showUserModal, setShowUserModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const data = await userService.getAll();
+      setUsers(data);
+    } catch (error) {
+      console.error("Failed to fetch users:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filtered = useMemo(() => {
     return users.filter(
@@ -22,62 +39,65 @@ export function useUsers() {
     setEditingUser(null);
     setShowUserModal(true);
   };
-
   const openEdit = (user: User) => {
     setEditingUser(user);
     setShowUserModal(true);
   };
-
   const openChangePassword = (user: User) => {
     setSelectedUser(user);
     setShowPasswordModal(true);
   };
-
   const closeUserModal = () => {
     setShowUserModal(false);
     setEditingUser(null);
   };
-
   const closePasswordModal = () => {
     setShowPasswordModal(false);
     setSelectedUser(null);
   };
 
-  const saveUser = (data: UserFormData) => {
-    if (editingUser) {
-      setUsers((prev) =>
-        prev.map((u) => (u.id === editingUser.id ? { ...u, ...data } : u)),
-      );
-    } else {
-      setUsers((prev) => [
-        ...prev,
-        {
-          id: Date.now(),
+  const saveUser = async (data: UserFormData) => {
+    try {
+      if (editingUser) {
+        await userService.update(editingUser.id, data);
+      } else {
+        await userService.create({
           ...data,
-          isActive: true,
-          lastLogin: "Never",
-        },
-      ]);
+          password: data.password || "password123",
+        });
+      }
+      await fetchUsers();
+      closeUserModal();
+    } catch (error) {
+      console.error("Failed to save user:", error);
     }
-    closeUserModal();
   };
 
-  const changePassword = (data: PasswordFormData) => {
-    if (data.newPassword !== data.confirmPassword) {
+  const changePassword = async (data: PasswordFormData): Promise<boolean> => {
+    if (!selectedUser) return false;
+    if (data.newPassword !== data.confirmPassword) return false;
+    try {
+      await userService.changePassword(selectedUser.id, data);
+      closePasswordModal();
+      return true;
+    } catch (error) {
+      console.error("Failed to change password:", error);
       return false;
     }
-    closePasswordModal();
-    return true;
   };
 
-  const toggleActive = (id: number) => {
-    setUsers((prev) =>
-      prev.map((u) => (u.id === id ? { ...u, isActive: !u.isActive } : u)),
-    );
+  const toggleActive = async (id: number) => {
+    try {
+      await userService.toggleActive(id);
+      await fetchUsers();
+    } catch (error) {
+      console.error("Failed to toggle user:", error);
+    }
   };
 
   return {
     users: filtered,
+    loading,
     search,
     setSearch,
     showUserModal,

@@ -8,6 +8,7 @@ import Button from "../../components/ui/Button";
 export default function UsersPage() {
   const {
     users,
+    loading,
     search,
     setSearch,
     showUserModal,
@@ -44,13 +45,17 @@ export default function UsersPage() {
         </Button>
       </div>
 
-      {/* Stats */}
-      <p className="text-xs text-zinc-500">
-        {users.length} {users.length === 1 ? "user" : "users"} found
-      </p>
-
-      {/* Grid */}
-      {users.length === 0 ? (
+      {/* Loading */}
+      {loading ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 h-52 animate-pulse"
+            />
+          ))}
+        </div>
+      ) : users.length === 0 ? (
         <div className="flex items-center justify-center h-48 text-zinc-700 text-sm">
           No users found
         </div>

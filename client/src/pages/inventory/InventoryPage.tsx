@@ -15,6 +15,7 @@ export default function InventoryPage() {
   const {
     inventory,
     stats,
+    loading,
     search,
     setSearch,
     filter,
@@ -59,6 +60,7 @@ export default function InventoryPage() {
         </div>
       </div>
 
+      {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
           <p className="text-xs text-zinc-500 uppercase tracking-widest mb-2">
@@ -106,7 +108,17 @@ export default function InventoryPage() {
             </tr>
           </thead>
           <tbody>
-            {inventory.length === 0 ? (
+            {loading ? (
+              [1, 2, 3, 4].map((i) => (
+                <tr key={i} className="border-b border-zinc-800">
+                  {[1, 2, 3, 4, 5, 6].map((j) => (
+                    <td key={j} className="px-4 py-3">
+                      <div className="h-4 bg-zinc-800 rounded animate-pulse" />
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : inventory.length === 0 ? (
               <tr>
                 <td
                   colSpan={6}
@@ -144,7 +156,14 @@ export default function InventoryPage() {
                       />
                     </td>
                     <td className="px-4 py-3 text-xs text-zinc-500">
-                      {item.lastRestocked}
+                      {new Date(item.lastRestocked).toLocaleDateString(
+                        "en-PH",
+                        {
+                          month: "long",
+                          day: "numeric",
+                          year: "numeric",
+                        },
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       <button

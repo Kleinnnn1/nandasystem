@@ -1,20 +1,37 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import type {
   InventoryItem,
   StockFilter,
   RestockFormData,
 } from "../types/inventory.types";
-import { FAKE_INVENTORY } from "../constants/inventory.fake";
+import { inventoryService } from "../services/inventory.service";
 import { getProductStatus } from "../utils/product";
 
 export function useInventory() {
-  const [inventory, setInventory] = useState<InventoryItem[]>(FAKE_INVENTORY);
+  const [inventory, setInventory] = useState<InventoryItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<StockFilter>("all");
   const [showRestockModal, setShowRestockModal] = useState(false);
   const [restockingItem, setRestockingItem] = useState<InventoryItem | null>(
     null,
   );
+
+  useEffect(() => {
+    fetchInventory();
+  }, []);
+
+  const fetchInventory = async () => {
+    try {
+      setLoading(true);
+      const data = await inventoryService.getAll();
+      setInventory(data);
+    } catch (error) {
+      console.error("Failed to fetch inventory:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filtered = useMemo(() => {
     return inventory.filter((item) => {
@@ -53,32 +70,21 @@ export function useInventory() {
     setRestockingItem(null);
   };
 
-  const restock = (data: RestockFormData) => {
+  const restock = async (data: RestockFormData) => {
     if (!restockingItem) return;
-    const qty = parseInt(data.quantity);
-    if (isNaN(qty) || qty <= 0) return;
-
-    setInventory((prev) =>
-      prev.map((item) =>
-        item.id === restockingItem.id
-          ? {
-              ...item,
-              stock: item.stock + qty,
-              lastRestocked: new Date().toLocaleDateString("en-PH", {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-              }),
-            }
-          : item,
-      ),
-    );
-    closeRestock();
+    try {
+      await inventoryService.restock(restockingItem.id, data);
+      await fetchInventory();
+      closeRestock();
+    } catch (error) {
+      console.error("Failed to restock:", error);
+    }
   };
 
   return {
     inventory: filtered,
     stats,
+    loading,
     search,
     setSearch,
     filter,
