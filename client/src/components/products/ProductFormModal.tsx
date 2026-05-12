@@ -4,23 +4,29 @@ import Modal from "../ui/Modal";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
 import type { Product, ProductFormData } from "../../types/product.types";
+import type { Category } from "../../types/category.types";
 import { getInitialFormData, generateBarcode } from "../../utils/product";
-import { FAKE_CATEGORIES } from "../../constants/pos.fake";
 
 interface Props {
   product: Product | null;
+  categories: Category[];
   onSave: (data: ProductFormData) => void;
   onClose: () => void;
 }
 
-export default function ProductFormModal({ product, onSave, onClose }: Props) {
+export default function ProductFormModal({
+  product,
+  categories,
+  onSave,
+  onClose,
+}: Props) {
   const [form, setForm] = useState<ProductFormData>(
-    getInitialFormData(product),
+    getInitialFormData(product ?? undefined),
   );
   const [errors, setErrors] = useState<Partial<ProductFormData>>({});
 
   useEffect(() => {
-    setForm(getInitialFormData(product));
+    setForm(getInitialFormData(product ?? undefined));
     setErrors({});
   }, [product]);
 
@@ -85,9 +91,9 @@ export default function ProductFormModal({ product, onSave, onClose }: Props) {
             className="h-12 px-4 text-sm bg-zinc-900 text-white border border-zinc-800 rounded-lg outline-none focus:border-red-600 transition-colors"
           >
             <option value="">Select category</option>
-            {FAKE_CATEGORIES.filter((c) => c !== "All").map((c) => (
-              <option key={c} value={c}>
-                {c}
+            {categories.map((c) => (
+              <option key={c.id} value={c.name}>
+                {c.name}
               </option>
             ))}
           </select>

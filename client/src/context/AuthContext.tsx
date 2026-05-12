@@ -9,43 +9,71 @@ interface AuthContextType extends AuthState {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-const FAKE_USERS: Record<string, User> = {
-  admin123: { id: 1, name: "Admin", role: "admin" },
-  cashier123: { id: 2, name: "Cashier", role: "cashier" },
-};
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<AuthState>({
-    user: null,
-    isAuthenticated: false,
-    isLoading: false,
-    error: null,
+  const [state, setState] = useState<AuthState>(() => {
+    // Check if token exists in localStorage on app load
+    const token = localStorage.getItem("token");
+    const user = localStorage.getItem("user");
+    if (token && user) {
+      return {
+        user: JSON.parse(user),
+        isAuthenticated: true,
+        isLoading: false,
+        error: null,
+      };
+    }
+    return {
+      user: null,
+      isAuthenticated: false,
+      isLoading: false,
+      error: null,
+    };
   });
 
   const login = useCallback(async (password: string) => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
+    try {
+      const response = await fetch(`${BASE_URL}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
 
-    await new Promise((resolve) => setTimeout(resolve, 800));
+      const data = await response.json();
 
-    const user = FAKE_USERS[password];
+      if (!response.ok) {
+        setState((prev) => ({
+          ...prev,
+          isLoading: false,
+          error: data.error || "Invalid password",
+        }));
+        return;
+      }
 
-    if (user) {
+      // Save token and user to localStorage
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
       setState({
-        user,
+        user: data.user,
         isAuthenticated: true,
         isLoading: false,
         error: null,
       });
-    } else {
+    } catch {
       setState((prev) => ({
         ...prev,
         isLoading: false,
-        error: "Invalid password. Try admin123 or cashier123",
+        error: "Could not connect to server.",
       }));
     }
   }, []);
 
   const logout = useCallback(() => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setState({
       user: null,
       isAuthenticated: false,

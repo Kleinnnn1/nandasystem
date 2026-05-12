@@ -7,6 +7,7 @@ import Button from "../../components/ui/Button";
 export default function CategoriesPage() {
   const {
     categories,
+    loading,
     search,
     setSearch,
     showModal,
@@ -39,12 +40,16 @@ export default function CategoriesPage() {
         </Button>
       </div>
 
-      <p className="text-xs text-zinc-500">
-        {categories.length}{" "}
-        {categories.length === 1 ? "category" : "categories"} found
-      </p>
-
-      {categories.length === 0 ? (
+      {loading ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 h-36 animate-pulse"
+            />
+          ))}
+        </div>
+      ) : categories.length === 0 ? (
         <div className="flex items-center justify-center h-48 text-zinc-700 text-sm">
           No categories found
         </div>

@@ -1,14 +1,16 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import type { Product, ProductFormData } from "../types/product.types";
-import { FAKE_PRODUCTS } from "../constants/pos.fake";
+import { productService } from "../services/product.service";
+import { categoryService } from "../services/category.service";
 import { generateBarcode } from "../utils/product";
+import type { Category } from "../types/category.types";
 
 const ITEMS_PER_PAGE = 8;
 
 export function useProducts() {
-  const [products, setProducts] = useState<Product[]>(
-    FAKE_PRODUCTS.map((p) => ({ ...p, barcode: generateBarcode() })),
-  );
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
@@ -16,6 +18,34 @@ export function useProducts() {
   const [showBarcodeModal, setShowBarcodeModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [barcodeProduct, setBarcodeProduct] = useState<Product | null>(null);
+
+  useEffect(() => {
+    fetchProducts();
+    fetchCategories();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const data = await productService.getAll();
+      setProducts(data);
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const data = await categoryService.getAll();
+      setCategories(data);
+    } catch (error) {
+      console.error("Failed to fetch categories:", error);
+    }
+  };
+
+  const categoryNames = ["All", ...categories.map((c) => c.name)];
 
   const filtered = useMemo(() => {
     return products.filter((p) => {
@@ -36,56 +66,63 @@ export function useProducts() {
     setEditingProduct(null);
     setShowModal(true);
   };
-
   const openEdit = (product: Product) => {
     setEditingProduct(product);
     setShowModal(true);
   };
-
   const openBarcode = (product: Product) => {
     setBarcodeProduct(product);
     setShowBarcodeModal(true);
   };
-
   const closeModal = () => {
     setShowModal(false);
     setEditingProduct(null);
   };
-
   const closeBarcodeModal = () => {
     setShowBarcodeModal(false);
     setBarcodeProduct(null);
   };
 
-  const saveProduct = (data: ProductFormData) => {
-    const product: Product = {
-      id: editingProduct?.id ?? Date.now(),
-      name: data.name,
-      price: parseFloat(data.price),
-      stock: parseInt(data.stock),
-      category: data.category,
-      barcode: data.barcode || generateBarcode(),
-    };
+  const saveProduct = async (data: ProductFormData) => {
+    try {
+      const category = categories.find((c) => c.name === data.category);
+      const payload = {
+        name: data.name,
+        price: parseFloat(data.price),
+        stock: parseInt(data.stock),
+        barcode: data.barcode || generateBarcode(),
+        categoryId: category?.id,
+      };
 
-    if (editingProduct) {
-      setProducts((prev) =>
-        prev.map((p) => (p.id === editingProduct.id ? product : p)),
-      );
-    } else {
-      setProducts((prev) => [...prev, product]);
+      if (editingProduct) {
+        await productService.update(editingProduct.id, payload);
+      } else {
+        await productService.create(payload);
+      }
+      await fetchProducts();
+      closeModal();
+    } catch (error) {
+      console.error("Failed to save product:", error);
     }
-    closeModal();
   };
 
-  const deleteProduct = (id: number) => {
+  const deleteProduct = async (id: number) => {
     if (confirm("Are you sure you want to delete this product?")) {
-      setProducts((prev) => prev.filter((p) => p.id !== id));
+      try {
+        await productService.delete(id);
+        await fetchProducts();
+      } catch (error) {
+        console.error("Failed to delete product:", error);
+      }
     }
   };
 
   return {
     products: paginated,
+    categories,
+    categoryNames,
     totalProducts: filtered.length,
+    loading,
     search,
     setSearch,
     categoryFilter,

@@ -14,12 +14,14 @@ import ProductFormModal from "../../components/products/ProductFormModal";
 import BarcodeModal from "../../components/products/BarcodeModal";
 import { getProductStatus, STATUS_CONFIG } from "../../utils/product";
 import { formatCurrency } from "../../utils/currency";
-import { FAKE_CATEGORIES } from "../../constants/pos.fake";
 
 export default function ProductsPage() {
   const {
     products,
+    categories,
+    categoryNames,
     totalProducts,
+    loading,
     search,
     setSearch,
     categoryFilter,
@@ -42,7 +44,7 @@ export default function ProductsPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      
+      {/* Top row */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1">
           <Search
@@ -67,7 +69,7 @@ export default function ProductsPage() {
           }}
           className="h-10 px-3 bg-zinc-900 border border-zinc-800 rounded-xl text-sm text-zinc-400 outline-none focus:border-red-600 transition-colors"
         >
-          {FAKE_CATEGORIES.map((c) => (
+          {categoryNames.map((c) => (
             <option key={c} value={c}>
               {c}
             </option>
@@ -78,6 +80,7 @@ export default function ProductsPage() {
         </Button>
       </div>
 
+      {/* Table */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
         <table className="w-full">
           <thead>
@@ -87,6 +90,7 @@ export default function ProductsPage() {
                 "Category",
                 "Price",
                 "Stock",
+                "Barcode",
                 "Status",
                 "Actions",
               ].map((h) => (
@@ -100,7 +104,17 @@ export default function ProductsPage() {
             </tr>
           </thead>
           <tbody>
-            {products.length === 0 ? (
+            {loading ? (
+              [1, 2, 3, 4].map((i) => (
+                <tr key={i} className="border-b border-zinc-800">
+                  {[1, 2, 3, 4, 5, 6, 7].map((j) => (
+                    <td key={j} className="px-4 py-3">
+                      <div className="h-4 bg-zinc-800 rounded animate-pulse" />
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : products.length === 0 ? (
               <tr>
                 <td
                   colSpan={7}
@@ -134,6 +148,9 @@ export default function ProductsPage() {
                     <td className="px-4 py-3 text-sm text-white">
                       {product.stock}
                     </td>
+                    <td className="px-4 py-3 text-xs text-zinc-500 font-mono">
+                      {product.barcode}
+                    </td>
                     <td className="px-4 py-3">
                       <Badge
                         label={statusConfig.label}
@@ -146,21 +163,18 @@ export default function ProductsPage() {
                         <button
                           onClick={() => openEdit(product)}
                           className="w-7 h-7 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-400 hover:text-white hover:border-red-600 transition-all"
-                          title="Edit"
                         >
                           <Pencil size={13} />
                         </button>
                         <button
                           onClick={() => deleteProduct(product.id)}
                           className="w-7 h-7 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-400 hover:text-red-500 hover:border-red-600 transition-all"
-                          title="Delete"
                         >
                           <Trash2 size={13} />
                         </button>
                         <button
                           onClick={() => openBarcode(product)}
                           className="w-7 h-7 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-400 hover:text-white hover:border-red-600 transition-all"
-                          title="Barcode"
                         >
                           <QrCode size={13} />
                         </button>
@@ -213,6 +227,7 @@ export default function ProductsPage() {
       {showModal && (
         <ProductFormModal
           product={editingProduct}
+          categories={categories}
           onSave={saveProduct}
           onClose={closeModal}
         />
