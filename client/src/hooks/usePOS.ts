@@ -1,5 +1,6 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import type { Product, CartItem, Order } from "../types/pos.types";
+import { posService } from "../services/pos.service";
 
 const INITIAL_ORDER: Order = {
   items: [],
@@ -12,11 +13,33 @@ const INITIAL_ORDER: Order = {
 };
 
 export function usePOS() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
   const [order, setOrder] = useState<Order>(INITIAL_ORDER);
   const [discountInput, setDiscountInput] = useState<string>("");
   const [cashInput, setCashInput] = useState<string>("");
   const [search, setSearch] = useState<string>("");
   const [activeCategory, setActiveCategory] = useState<string>("All");
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      setLoadingProducts(true);
+      const data = await posService.getProducts();
+      setProducts(data);
+      const cats = ["All", ...Array.from(new Set(data.map((p) => p.category)))];
+      setCategories(cats);
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+    } finally {
+      setLoadingProducts(false);
+    }
+  };
 
   const addToCart = useCallback((product: Product) => {
     setOrder((prev) => {
@@ -40,7 +63,6 @@ export function usePOS() {
           { product, quantity: 1, total: product.price },
         ];
       }
-
       return recalculate({ ...prev, items: updatedItems });
     });
   }, []);
@@ -97,6 +119,44 @@ export function usePOS() {
     }));
   }, []);
 
+  const checkout = useCallback(async () => {
+    console.log("checkout called");
+    console.log("order items:", order.items);
+    console.log("order total:", order.total);
+    console.log("order cash:", order.cash);
+
+    if (order.items.length === 0 || order.cash < order.total) {
+      console.log("checkout blocked - items empty or cash insufficient");
+      return;
+    }
+
+    setCheckoutLoading(true);
+    try {
+      const payload = {
+        items: order.items.map((i) => ({
+          productId: i.product.id,
+          quantity: i.quantity,
+          price: i.product.price,
+          total: i.total,
+        })),
+        total: order.total,
+        discount: order.discount,
+        cash: order.cash,
+        change: order.change,
+      };
+      console.log("Sending payload:", payload);
+      await posService.createSale(payload);
+      await fetchProducts();
+      clearCart();
+      return true;
+    } catch (error) {
+      console.error("Checkout error:", error);
+      return false;
+    } finally {
+      setCheckoutLoading(false);
+    }
+  }, [order, clearCart]);
+
   const recalculate = (o: Order): Order => {
     const subtotal = o.items.reduce((sum, i) => sum + i.total, 0);
     const discountAmt =
@@ -106,15 +166,19 @@ export function usePOS() {
     return { ...o, subtotal, total, change };
   };
 
-  const filteredProducts = useMemo(
-    () => ({
-      search,
-      activeCategory,
-    }),
-    [search, activeCategory],
-  );
+  const filteredProducts = useMemo(() => {
+    return products.filter((p) => {
+      const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
+      const matchesCategory =
+        activeCategory === "All" || p.category === activeCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [products, search, activeCategory]);
 
   return {
+    products: filteredProducts,
+    categories,
+    loadingProducts,
     order,
     discountInput,
     cashInput,
@@ -122,12 +186,13 @@ export function usePOS() {
     setSearch,
     activeCategory,
     setActiveCategory,
-    filteredProducts,
     addToCart,
     updateQuantity,
     removeFromCart,
     clearCart,
     applyDiscount,
     applyCash,
+    checkout,
+    checkoutLoading,
   };
 }

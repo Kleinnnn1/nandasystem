@@ -9,7 +9,7 @@ import ProductsPage from "./pages/products/ProductsPage";
 import CategoriesPage from "./pages/categories/CategoriesPage";
 import InventoryPage from "./pages/inventory/InventoryPage";
 import DashboardPage from "./pages/auth/dashboard/DashboardPage";
-import POSPage from "./pages/POSPage";
+import POSPage from "./pages/pos/POSPage";
 import UsersPage from "./pages/users/UserPage";
 
 

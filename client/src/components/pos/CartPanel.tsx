@@ -15,6 +15,7 @@ interface Props {
   onDiscount: (value: string) => void;
   onCash: (value: string) => void;
   onCheckout: () => void;
+  checkoutLoading?: boolean;
 }
 
 export default function CartPanel({
@@ -27,12 +28,12 @@ export default function CartPanel({
   onDiscount,
   onCash,
   onCheckout,
+  checkoutLoading,
 }: Props) {
   const canCheckout = order.items.length > 0 && order.cash >= order.total;
 
   return (
     <div className="flex flex-col h-full bg-zinc-950 border-l border-zinc-800">
-
       <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800">
         <div className="flex items-center gap-2">
           <ShoppingCart size={15} className="text-zinc-400" />
@@ -74,7 +75,6 @@ export default function CartPanel({
 
       {order.items.length > 0 && (
         <div className="border-t border-zinc-800 px-4 py-3 flex flex-col gap-2.5">
-
           <div className="flex justify-between items-center">
             <span className="text-xs text-zinc-500">Subtotal</span>
             <span className="text-xs text-white">
@@ -124,14 +124,19 @@ export default function CartPanel({
           </div>
 
           <Button
-            onClick={onCheckout}
-            disabled={!canCheckout}
+            onClick={() => {
+              console.log("Button clicked!");
+              onCheckout();
+            }}
+            disabled={!canCheckout || checkoutLoading}
+            loading={checkoutLoading}
             fullWidth
             size="lg"
             className="mt-1"
           >
-            Process Payment
+            {checkoutLoading ? "Processing..." : "Process Payment"}
           </Button>
+          
         </div>
       )}
     </div>
