@@ -6,6 +6,7 @@ import type {
 } from "../types/inventory.types";
 import { inventoryService } from "../services/inventory.service";
 import { getProductStatus } from "../utils/product";
+import toast from "react-hot-toast";
 
 export function useInventory() {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
@@ -76,8 +77,9 @@ export function useInventory() {
       await inventoryService.restock(restockingItem.id, data);
       await fetchInventory();
       closeRestock();
+      toast.success(`${restockingItem.name} restocked successfully.`);
     } catch (error) {
-      console.error("Failed to restock:", error);
+      toast.error("Failed to restock item.");
     }
   };
 

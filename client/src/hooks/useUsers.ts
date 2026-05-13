@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import type { User, UserFormData, PasswordFormData } from "../types/user.types";
 import { userService } from "../services/user.service";
+import toast from "react-hot-toast";
 
 export function useUsers() {
   const [users, setUsers] = useState<User[]>([]);
@@ -68,8 +69,9 @@ export function useUsers() {
       }
       await fetchUsers();
       closeUserModal();
+      toast.success(editingUser ? "User updated." : "User added.");
     } catch (error) {
-      console.error("Failed to save user:", error);
+      toast.error("Failed to save user.");
     }
   };
 
@@ -79,9 +81,10 @@ export function useUsers() {
     try {
       await userService.changePassword(selectedUser.id, data);
       closePasswordModal();
+      toast.success("Password changed successfully.");
       return true;
     } catch (error) {
-      console.error("Failed to change password:", error);
+      toast.error("Failed to change password.");
       return false;
     }
   };

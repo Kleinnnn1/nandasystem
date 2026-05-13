@@ -4,6 +4,7 @@ import { productService } from "../services/product.service";
 import { categoryService } from "../services/category.service";
 import { generateBarcode } from "../utils/product";
 import type { Category } from "../types/category.types";
+import toast from "react-hot-toast";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -101,8 +102,9 @@ export function useProducts() {
       }
       await fetchProducts();
       closeModal();
+      toast.success(editingProduct ? "Product updated." : "Product added.");
     } catch (error) {
-      console.error("Failed to save product:", error);
+      toast.error("Failed to save product.");
     }
   };
 
@@ -111,8 +113,9 @@ export function useProducts() {
       try {
         await productService.delete(id);
         await fetchProducts();
+        toast.success("Product deleted.");
       } catch (error) {
-        console.error("Failed to delete product:", error);
+        toast.error("Failed to delete product.");
       }
     }
   };

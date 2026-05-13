@@ -3,6 +3,7 @@ import type { Product, CartItem, Order } from "../types/pos.types";
 import { posService } from "../services/pos.service";
 import type { ReceiptData } from "../types/receipt.types";
 import { generateReceiptNo } from "../utils/receipt";
+import toast from "react-hot-toast";
 
 const INITIAL_ORDER: Order = {
   items: [],
@@ -168,7 +169,7 @@ export function usePOS() {
       clearCart();
       return true;
     } catch (error) {
-      console.error("Checkout error:", error);
+      toast.error("Failed to process payment.");
       return false;
     } finally {
       setCheckoutLoading(false);

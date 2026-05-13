@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import type { Category, CategoryFormData } from "../types/category.types";
 import { categoryService } from "../services/cateogory.service";
+import toast from "react-hot-toast";
 
 export function useCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -19,7 +20,7 @@ export function useCategories() {
       const data = await categoryService.getAll();
       setCategories(data);
     } catch (error) {
-      console.error("Failed to fetch categories:", error);
+      toast.error("Failed to save category.");
     } finally {
       setLoading(false);
     }
@@ -27,7 +28,7 @@ export function useCategories() {
 
   const filtered = useMemo(() => {
     return categories.filter((c) =>
-      c.name.toLowerCase().includes(search.toLowerCase())
+      c.name.toLowerCase().includes(search.toLowerCase()),
     );
   }, [categories, search]);
 
@@ -63,15 +64,16 @@ export function useCategories() {
   const deleteCategory = async (id: number) => {
     const category = categories.find((c) => c.id === id);
     if (category && category.productCount > 0) {
-      alert("Cannot delete a category with existing products.");
+      toast.error("Cannot delete a category with existing products.");
       return;
     }
     if (confirm("Are you sure you want to delete this category?")) {
       try {
         await categoryService.delete(id);
         await fetchCategories();
-      } catch (error) {
-        console.error("Failed to delete category:", error);
+        toast.success("Category deleted.");
+      } catch {
+        toast.error("Failed to delete category.");
       }
     }
   };
