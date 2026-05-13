@@ -2,6 +2,7 @@ import { Search } from "lucide-react";
 import { usePOS } from "../../hooks/usePOS";
 import ProductCard from "../../components/pos/ProductCard";
 import CartPanel from "../../components/pos/CartPanel";
+import ReceiptModal from "../../components/pos/ReceiptModal";
 
 export default function POSPage() {
   const {
@@ -23,22 +24,18 @@ export default function POSPage() {
     applyCash,
     checkout,
     checkoutLoading,
+    receipt,
+    closeReceipt,
   } = usePOS();
 
   const handleCheckout = async () => {
-    const success = await checkout();
-    if (success) {
-      alert(
-        `Payment processed!\nTotal: ₱${order.total.toFixed(2)}\nChange: ₱${order.change.toFixed(2)}`,
-      );
-    }
+    await checkout();
   };
 
   return (
     <div className="flex h-[calc(100vh-52px)] -m-6 overflow-hidden">
-      {/* Left - Products */}
+
       <div className="flex-1 flex flex-col p-4 gap-3 overflow-hidden">
-        {/* Search */}
         <div className="relative">
           <Search
             size={15}
@@ -111,6 +108,8 @@ export default function POSPage() {
           checkoutLoading={checkoutLoading}
         />
       </div>
+
+      {receipt && <ReceiptModal receipt={receipt} onClose={closeReceipt} />}
     </div>
   );
 }

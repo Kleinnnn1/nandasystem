@@ -19,8 +19,7 @@ export const posService = {
     return api.get("/api/products");
   },
 
-  createSale: async (payload: SalePayload): Promise<void> => {
-    console.log("Sending sale payload:", payload);
+  createSale: async (payload: SalePayload): Promise<{ id: number }> => {
     return api.post("/api/sales", payload);
   },
 };

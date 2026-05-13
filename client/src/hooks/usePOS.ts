@@ -1,6 +1,8 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import type { Product, CartItem, Order } from "../types/pos.types";
 import { posService } from "../services/pos.service";
+import type { ReceiptData } from "../types/receipt.types";
+import { generateReceiptNo } from "../utils/receipt";
 
 const INITIAL_ORDER: Order = {
   items: [],
@@ -22,9 +24,14 @@ export function usePOS() {
   const [search, setSearch] = useState<string>("");
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [receipt, setReceipt] = useState<ReceiptData | null>(null);
 
   useEffect(() => {
     fetchProducts();
+  }, []);
+
+  const closeReceipt = useCallback(() => {
+    setReceipt(null);
   }, []);
 
   const fetchProducts = async () => {
@@ -120,16 +127,7 @@ export function usePOS() {
   }, []);
 
   const checkout = useCallback(async () => {
-    console.log("checkout called");
-    console.log("order items:", order.items);
-    console.log("order total:", order.total);
-    console.log("order cash:", order.cash);
-
-    if (order.items.length === 0 || order.cash < order.total) {
-      console.log("checkout blocked - items empty or cash insufficient");
-      return;
-    }
-
+    if (order.items.length === 0 || order.cash < order.total) return;
     setCheckoutLoading(true);
     try {
       const payload = {
@@ -144,8 +142,28 @@ export function usePOS() {
         cash: order.cash,
         change: order.change,
       };
-      console.log("Sending payload:", payload);
-      await posService.createSale(payload);
+
+      const sale = await posService.createSale(payload);
+
+      const receiptData: ReceiptData = {
+        id: sale.id,
+        receiptNo: generateReceiptNo(sale.id),
+        cashier: "Admin",
+        items: order.items.map((i) => ({
+          name: i.product.name,
+          quantity: i.quantity,
+          price: i.product.price,
+          total: i.total,
+        })),
+        subtotal: order.subtotal,
+        discount: order.discount,
+        total: order.total,
+        cash: order.cash,
+        change: order.change,
+        createdAt: new Date(),
+      };
+
+      setReceipt(receiptData);
       await fetchProducts();
       clearCart();
       return true;
@@ -194,5 +212,7 @@ export function usePOS() {
     applyCash,
     checkout,
     checkoutLoading,
+    receipt,
+    closeReceipt,
   };
 }
