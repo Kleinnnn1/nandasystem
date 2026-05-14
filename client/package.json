@@ -3,13 +3,13 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "main": "electron/main.js",
+  "main": "electron/main.cjs",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "electron:dev": "concurrently \"cross-env NODE_ENV=development electron .\" \"vite\"",
-    "electron:build": "vite build && electron-builder build --win"
+    "electron:dev": "concurrently \"vite\" \"cross-env NODE_ENV=development electron .\"",
+    "electron:build": "cross-env ELECTRON=true vite build && electron-builder build --win"
   },
   "build": {
     "appId": "com.nanda.pos",
@@ -21,6 +21,16 @@
       "dist/**/*",
       "electron/**/*"
     ],
+    "extraResources": [
+      {
+        "from": "../server",
+        "to": "server",
+        "filter": [
+          "**/*",
+          "!node_modules/**"
+        ]
+      }
+    ],
     "win": {
       "target": "nsis",
       "icon": "electron/icon.ico"
@@ -28,9 +38,6 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "installerIcon": "electron/icon.ico",
-      "uninstallerIcon": "electron/icon.ico",
-      "installerHeaderIcon": "electron/icon.ico",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true
     }
@@ -42,7 +49,8 @@
     "react-dom": "^19.2.5",
     "react-hot-toast": "^2.6.0",
     "react-router-dom": "^7.15.0",
-    "recharts": "^3.8.1"
+    "recharts": "^3.8.1",
+    "tree-kill": "^1.2.2"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -56,6 +64,7 @@
     "cross-env": "^10.1.0",
     "electron": "^42.0.1",
     "electron-builder": "^26.8.1",
+    "electron-rebuild": "^3.2.9",
     "eslint": "^10.2.1",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
