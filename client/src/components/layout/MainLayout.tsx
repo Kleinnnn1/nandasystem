@@ -1,16 +1,20 @@
 import { Outlet } from "react-router-dom";
-import Sidebar from "./Sidebar";
+import Titlebar from "./Titlebar";
 import Topbar from "./Topbar";
+import Sidebar from "./Sidebar";
 
 export default function MainLayout() {
   return (
-    <div className="flex h-screen bg-zinc-950 overflow-hidden">
-      <Sidebar />
-      <div className="flex flex-col flex-1 overflow-hidden">
-        <Topbar />
-        <main className="flex-1 overflow-y-auto p-6 bg-zinc-950">
-          <Outlet />
-        </main>
+    <div className="flex flex-col h-screen bg-zinc-950 overflow-hidden">
+      <Titlebar />
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar />
+        <div className="flex flex-col flex-1 overflow-hidden">
+          <Topbar />
+          <main className="flex-1 overflow-y-auto p-6 bg-zinc-950">
+            <Outlet />
+          </main>
+        </div>
       </div>
     </div>
   );
