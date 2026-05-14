@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import type { Category, CategoryFormData } from "../types/category.types";
-import { categoryService } from "../services/cateogory.service";
+import { categoryService } from "../services/category.service";
 import toast from "react-hot-toast";
 
 export function useCategories() {
