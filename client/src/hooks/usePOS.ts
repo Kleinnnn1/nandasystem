@@ -4,6 +4,7 @@ import { posService } from "../services/pos.service";
 import type { ReceiptData } from "../types/receipt.types";
 import { generateReceiptNo } from "../utils/receipt";
 import toast from "react-hot-toast";
+import { useAuthContext } from "../context/AuthContext";
 
 const INITIAL_ORDER: Order = {
   items: [],
@@ -26,6 +27,8 @@ export function usePOS() {
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [receipt, setReceipt] = useState<ReceiptData | null>(null);
+
+  const { user } = useAuthContext();
 
   useEffect(() => {
     fetchProducts();
@@ -149,7 +152,7 @@ export function usePOS() {
       const receiptData: ReceiptData = {
         id: sale.id,
         receiptNo: generateReceiptNo(sale.id),
-        cashier: "Admin",
+        cashier: user?.name ?? "Cashier",
         items: order.items.map((i) => ({
           name: i.product.name,
           quantity: i.quantity,

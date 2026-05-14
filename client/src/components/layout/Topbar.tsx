@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { ROUTES } from "../../constants";
 
@@ -7,26 +8,30 @@ const PAGE_TITLES: Record<string, string> = {
   [ROUTES.PRODUCTS]: "Products",
   [ROUTES.CATEGORIES]: "Categories",
   [ROUTES.INVENTORY]: "Inventory",
-  [ROUTES.ANALYTICS]: "Analytics",
-  [ROUTES.SALES_HISTORY]: "Sales History",
   [ROUTES.USERS]: "Users",
 };
 
 export default function Topbar() {
   const { pathname } = useLocation();
   const title = PAGE_TITLES[pathname] ?? "N&A POS";
+  const [time, setTime] = useState(new Date());
 
-  const now = new Date();
+  useEffect(() => {
+    const interval = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   const dateTime =
-    now.toLocaleDateString("en-PH", {
+    time.toLocaleDateString("en-PH", {
       month: "long",
       day: "numeric",
       year: "numeric",
     }) +
     " · " +
-    now.toLocaleTimeString("en-PH", {
+    time.toLocaleTimeString("en-PH", {
       hour: "2-digit",
       minute: "2-digit",
+      second: "2-digit",
     });
 
   return (
