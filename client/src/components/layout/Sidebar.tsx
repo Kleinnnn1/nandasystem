@@ -8,9 +8,8 @@ export default function Sidebar() {
   const { user, logout } = useAuthContext();
 
   return (
-    <aside className="w-52 bg-zinc-900 border-r border-zinc-800 flex flex-col shrink-0 h-screen">
-      {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-zinc-800">
+    <aside className="w-52 bg-zinc-900 border-r border-zinc-800 flex flex-col shrink-0 h-full">
+      <div className="flex items-center gap-3 px-4 py-5 border-b border-zinc-800 shrink-0">
         <div className="w-9 h-9 rounded-full bg-red-600 flex items-center justify-center text-white text-xs font-medium shrink-0">
           N&A
         </div>
@@ -22,15 +21,12 @@ export default function Sidebar() {
         </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 px-2 py-3 overflow-y-auto flex flex-col gap-1">
+      <nav className="flex-1 px-2 py-3 overflow-y-auto flex flex-col gap-1 min-h-0">
         {NAV_SECTIONS.map((section) => {
           const visibleItems = section.items.filter(
             (item) => !item.adminOnly || user?.role === "admin",
           );
-
           if (visibleItems.length === 0) return null;
-
           return (
             <div key={section.section}>
               <p className="text-zinc-600 text-xs uppercase tracking-widest px-2 py-2 mt-2">
@@ -57,8 +53,7 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* User footer */}
-      <div className="border-t border-zinc-800 px-3 py-3">
+      <div className="border-t border-zinc-800 px-3 py-3 shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-7 h-7 rounded-full bg-zinc-700 flex items-center justify-center text-zinc-400 text-xs shrink-0">
             {user?.name?.charAt(0).toUpperCase()}
