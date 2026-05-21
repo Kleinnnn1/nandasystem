@@ -2,6 +2,7 @@ import { Search, Plus } from "lucide-react";
 import { useCategories } from "../../hooks/useCategories";
 import CategoryCard from "../../components/categories/CategoryCard";
 import CategoryFormModal from "../../components/categories/CategoryFormModal";
+import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal";
 import Button from "../../components/ui/Button";
 
 export default function CategoriesPage() {
@@ -17,11 +18,13 @@ export default function CategoriesPage() {
     closeModal,
     saveCategory,
     deleteCategory,
+    showDeleteModal,
+    confirmDelete,
+    cancelDelete,
   } = useCategories();
 
   return (
     <div className="flex flex-col gap-4">
-
       <div className="flex items-center gap-3">
         <div className="relative flex-1">
           <Search
@@ -73,6 +76,14 @@ export default function CategoriesPage() {
           onClose={closeModal}
         />
       )}
+
+      <ConfirmDeleteModal
+        isOpen={showDeleteModal}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+        title="Delete Category"
+        description="Are you sure you want to delete this category? This action cannot be undone."
+      />
     </div>
   );
 }

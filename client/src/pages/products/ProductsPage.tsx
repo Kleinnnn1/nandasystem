@@ -14,6 +14,7 @@ import ProductFormModal from "../../components/products/ProductFormModal";
 import BarcodeModal from "../../components/products/BarcodeModal";
 import { getProductStatus, STATUS_CONFIG } from "../../utils/product";
 import { formatCurrency } from "../../utils/currency";
+import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal";
 
 export default function ProductsPage() {
   const {
@@ -40,6 +41,9 @@ export default function ProductsPage() {
     closeBarcodeModal,
     saveProduct,
     deleteProduct,
+    showDeleteModal,
+    confirmDelete,
+    cancelDelete,
   } = useProducts();
 
   return (
@@ -235,6 +239,14 @@ export default function ProductsPage() {
       {showBarcodeModal && barcodeProduct && (
         <BarcodeModal product={barcodeProduct} onClose={closeBarcodeModal} />
       )}
+      
+      <ConfirmDeleteModal
+        isOpen={showDeleteModal}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+        title="Delete Product"
+        description="Are you sure you want to delete this product? This action cannot be undone."
+      />
     </div>
   );
 }

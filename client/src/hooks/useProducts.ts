@@ -19,6 +19,8 @@ export function useProducts() {
   const [showBarcodeModal, setShowBarcodeModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [barcodeProduct, setBarcodeProduct] = useState<Product | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   useEffect(() => {
     fetchProducts();
@@ -108,16 +110,28 @@ export function useProducts() {
     }
   };
 
-  const deleteProduct = async (id: number) => {
-    if (confirm("Are you sure you want to delete this product?")) {
-      try {
-        await productService.delete(id);
-        await fetchProducts();
-        toast.success("Product deleted.");
-      } catch (error) {
-        toast.error("Failed to delete product.");
-      }
+  const deleteProduct = (id: number) => {
+    setDeletingId(id);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (deletingId === null) return;
+    try {
+      await productService.delete(deletingId);
+      await fetchProducts();
+      toast.success("Product deleted.");
+    } catch {
+      toast.error("Failed to delete product.");
+    } finally {
+      setShowDeleteModal(false);
+      setDeletingId(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setDeletingId(null);
   };
 
   return {
@@ -144,5 +158,8 @@ export function useProducts() {
     closeBarcodeModal,
     saveProduct,
     deleteProduct,
+    showDeleteModal,
+    confirmDelete,
+    cancelDelete,
   };
 }
