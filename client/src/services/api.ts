@@ -2,13 +2,22 @@ const BASE_URL = import.meta.env.VITE_API_URL;
 
 const getToken = () => localStorage.getItem("token");
 
+const handleResponse = async (res: Response) => {
+  if (res.status === 401 || res.status === 403) {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+    throw new Error("Session expired");
+  }
+  if (!res.ok) throw await res.json();
+  return res.json();
+};
+
 export const api = {
   get: async (endpoint: string) => {
     const res = await fetch(`${BASE_URL}${endpoint}`, {
       headers: { Authorization: `Bearer ${getToken()}` },
     });
-    if (!res.ok) throw await res.json();
-    return res.json();
+    return handleResponse(res);
   },
 
   post: async (endpoint: string, body: unknown) => {
@@ -20,8 +29,7 @@ export const api = {
       },
       body: JSON.stringify(body),
     });
-    if (!res.ok) throw await res.json();
-    return res.json();
+    return handleResponse(res);
   },
 
   put: async (endpoint: string, body: unknown) => {
@@ -33,8 +41,7 @@ export const api = {
       },
       body: JSON.stringify(body),
     });
-    if (!res.ok) throw await res.json();
-    return res.json();
+    return handleResponse(res);
   },
 
   patch: async (endpoint: string, body?: unknown) => {
@@ -46,8 +53,7 @@ export const api = {
       },
       body: body ? JSON.stringify(body) : undefined,
     });
-    if (!res.ok) throw await res.json();
-    return res.json();
+    return handleResponse(res);
   },
 
   delete: async (endpoint: string) => {
@@ -55,7 +61,6 @@ export const api = {
       method: "DELETE",
       headers: { Authorization: `Bearer ${getToken()}` },
     });
-    if (!res.ok) throw await res.json();
-    return res.json();
+    return handleResponse(res);
   },
 };

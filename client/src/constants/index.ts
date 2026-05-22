@@ -13,4 +13,5 @@ export const ROUTES = {
   CATEGORIES: "/categories",
   INVENTORY: "/inventory",
   USERS: "/users",
+  REPORTING: "/reporting",
 } as const;

@@ -8,6 +8,7 @@ const productRoutes = require("./routes/products");
 const inventoryRoutes = require("./routes/inventory");
 const userRoutes = require("./routes/users");
 const saleRoutes = require("./routes/sales");
+const reportRoutes = require("./routes/report");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,6 +24,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/inventory", inventoryRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/sales", saleRoutes);
+app.use("/api/reports", reportRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "N&A POS API is running" });

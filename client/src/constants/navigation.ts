@@ -4,9 +4,8 @@ import {
   Package,
   Tag,
   BarChart2,
-  TrendingUp,
-  Receipt,
   Users,
+  FileBarChart,
 } from "lucide-react";
 import { ROUTES } from "./index";
 import type { NavSection } from "../types/navigation.types";
@@ -31,6 +30,12 @@ export const NAV_SECTIONS: NavSection[] = [
     section: "Admin",
     items: [
       { label: "Users", path: ROUTES.USERS, icon: Users, adminOnly: true },
+      {
+        label: "Reporting",
+        path: ROUTES.REPORTING,
+        icon: FileBarChart,
+        adminOnly: true,
+      },
     ],
   },
 ];

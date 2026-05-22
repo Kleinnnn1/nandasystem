@@ -11,7 +11,7 @@ import InventoryPage from "./pages/inventory/InventoryPage";
 import DashboardPage from "./pages/auth/dashboard/DashboardPage";
 import POSPage from "./pages/pos/POSPage";
 import UsersPage from "./pages/users/UserPage";
-
+import ReportingPage from "./pages/reporting/ReportPage";
 
 function AppRoutes() {
   const { isAuthenticated } = useAuthContext();
@@ -36,9 +36,9 @@ function AppRoutes() {
           <Route path={ROUTES.CATEGORIES} element={<CategoriesPage />} />
           <Route path={ROUTES.INVENTORY} element={<InventoryPage />} />
 
-          {/* Admin only */}
           <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
             <Route path={ROUTES.USERS} element={<UsersPage />} />
+            <Route path={ROUTES.REPORTING} element={<ReportingPage />} />
           </Route>
         </Route>
       </Route>
