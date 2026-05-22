@@ -13,7 +13,7 @@ export default function DashboardPage() {
   if (loading || !stats) {
     return (
       <div className="flex flex-col gap-4">
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
@@ -71,14 +71,14 @@ export default function DashboardPage() {
         />
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        <div className="col-span-2">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="md:col-span-2">
           <WeeklySalesChart data={stats.weeklyData} />
         </div>
         <TopProducts data={stats.topProducts} />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <LowStockAlerts data={stats.lowStockItems} />
         <RecentTransactions data={stats.recentTransactions} />
       </div>

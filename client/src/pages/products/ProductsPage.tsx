@@ -48,8 +48,8 @@ export default function ProductsPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Top row */}
-      <div className="flex items-center gap-3">
+
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
         <div className="relative flex-1">
           <Search
             size={15}
@@ -71,7 +71,7 @@ export default function ProductsPage() {
             setCategoryFilter(e.target.value);
             setCurrentPage(1);
           }}
-          className="h-10 px-3 bg-zinc-900 border border-zinc-800 rounded-xl text-sm text-zinc-400 outline-none focus:border-red-600 transition-colors"
+          className="h-10 px-3 w-full sm:w-auto bg-zinc-900 border border-zinc-800 rounded-xl text-sm text-zinc-400 outline-none focus:border-red-600 transition-colors"
         >
           {categoryNames.map((c) => (
             <option key={c} value={c}>
@@ -79,13 +79,12 @@ export default function ProductsPage() {
             </option>
           ))}
         </select>
-        <Button onClick={openAdd} size="md">
+        <Button onClick={openAdd} size="md" className="w-full sm:w-auto">
           <Plus size={15} className="mr-1.5" /> Add Product
         </Button>
       </div>
 
-      {/* Table */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="border-b border-zinc-800">
@@ -192,7 +191,8 @@ export default function ProductsPage() {
         </table>
       </div>
 
-      <div className="flex items-center justify-between">
+      {/* Pagination */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
         <p className="text-xs text-zinc-500">
           Showing {Math.min((currentPage - 1) * 8 + 1, totalProducts)}–
           {Math.min(currentPage * 8, totalProducts)} of {totalProducts} products
@@ -239,7 +239,7 @@ export default function ProductsPage() {
       {showBarcodeModal && barcodeProduct && (
         <BarcodeModal product={barcodeProduct} onClose={closeBarcodeModal} />
       )}
-      
+
       <ConfirmDeleteModal
         isOpen={showDeleteModal}
         onConfirm={confirmDelete}

@@ -26,8 +26,7 @@ export default function UsersPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Top row */}
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
         <div className="relative flex-1">
           <Search
             size={15}
@@ -40,12 +39,11 @@ export default function UsersPage() {
             className="w-full h-10 bg-zinc-900 border border-zinc-800 rounded-xl pl-9 pr-4 text-sm text-white placeholder-zinc-600 outline-none focus:border-red-600 transition-colors"
           />
         </div>
-        <Button onClick={openAdd} size="md">
+        <Button onClick={openAdd} size="md" className="w-full sm:w-auto">
           <Plus size={15} className="mr-1.5" /> Add User
         </Button>
       </div>
 
-      {/* Loading */}
       {loading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {[1, 2, 3].map((i) => (
@@ -72,7 +70,6 @@ export default function UsersPage() {
         </div>
       )}
 
-      {/* Modals */}
       {showUserModal && (
         <UserFormModal
           user={editingUser}

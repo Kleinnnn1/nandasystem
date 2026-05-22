@@ -134,8 +134,7 @@ export default function ReportingPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-white text-lg font-semibold">Sales Report</h1>
           <p className="text-zinc-500 text-sm mt-0.5">
@@ -145,15 +144,14 @@ export default function ReportingPage() {
         <button
           onClick={handleExportPDF}
           disabled={!report || loading}
-          className="flex items-center gap-2 h-10 px-4 rounded-xl bg-red-600 hover:bg-red-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium transition-colors"
+          className="flex items-center justify-center gap-2 h-10 px-4 w-full sm:w-auto rounded-xl bg-red-600 hover:bg-red-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium transition-colors"
         >
           <FileDown size={15} />
           Export PDF
         </button>
       </div>
 
-      {/* Period Filter */}
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {PERIODS.map((p) => (
           <button
             key={p.value}
@@ -169,7 +167,6 @@ export default function ReportingPage() {
         ))}
       </div>
 
-      {/* Stat Cards */}
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
@@ -208,8 +205,7 @@ export default function ReportingPage() {
         </div>
       ) : null}
 
-      {/* Table */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="border-b border-zinc-800">

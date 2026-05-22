@@ -33,9 +33,8 @@ export default function POSPage() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-52px)] -m-6 overflow-hidden">
-
-      <div className="flex-1 flex flex-col p-4 gap-3 overflow-hidden">
+    <div className="flex flex-col md:flex-row h-[calc(100vh-52px)] -m-6 overflow-hidden">
+      <div className="flex-1 flex flex-col p-4 gap-3 overflow-hidden max-h-[55vh] md:max-h-none">
         <div className="relative">
           <Search
             size={15}
@@ -94,7 +93,7 @@ export default function POSPage() {
         </div>
       </div>
 
-      <div className="w-72 shrink-0">
+      <div className="w-full md:w-72 shrink-0 md:h-full">
         <CartPanel
           order={order}
           discountInput={discountInput}

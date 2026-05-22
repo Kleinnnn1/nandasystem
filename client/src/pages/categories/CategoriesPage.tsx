@@ -25,7 +25,7 @@ export default function CategoriesPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
         <div className="relative flex-1">
           <Search
             size={15}
@@ -38,7 +38,7 @@ export default function CategoriesPage() {
             className="w-full h-10 bg-zinc-900 border border-zinc-800 rounded-xl pl-9 pr-4 text-sm text-white placeholder-zinc-600 outline-none focus:border-red-600 transition-colors"
           />
         </div>
-        <Button onClick={openAdd} size="md">
+        <Button onClick={openAdd} size="md" className="w-full sm:w-auto">
           <Plus size={15} className="mr-1.5" /> Add Category
         </Button>
       </div>
